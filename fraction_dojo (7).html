@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>분수 나누기 챌린지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#141B2E;
+    --bg-2:#0F1524;
+    --panel:#1F2C4C;
+    --panel-2:#28395E;
+    --gold:#E3A83B;
+    --gold-light:#F4CE7C;
+    --ink:#F3EFE3;
+    --muted:#93A0BF;
+    --success:#4CAF7D;
+    --danger:#D6555A;
+    --line: rgba(243,239,227,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% -10%, #24345c 0%, transparent 45%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 40px),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans KR', sans-serif;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:28px 14px 60px;
+  }
+  .app{
+    width:100%;
+    max-width:460px;
+    background:linear-gradient(180deg, var(--panel), var(--bg-2));
+    border-radius:22px;
+    border:1px solid var(--line);
+    box-shadow:0 30px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+    overflow:hidden;
+    position:relative;
+  }
+  .app::before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 26px);
+    pointer-events:none;
+  }
+  header.top{
+    padding:20px 22px 14px;
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  header.top .brand{
+    font-family:'Black Han Sans', sans-serif;
+    font-size:19px;
+    letter-spacing:0.5px;
+    color:var(--gold-light);
+    display:flex; align-items:center; gap:8px;
+  }
+  header.top .brand .stamp{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(160deg, var(--gold), #a9721e);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;
+    box-shadow:0 2px 0 rgba(0,0,0,0.3);
+  }
+  header.top .user-chip{
+    font-size:12px; color:var(--muted); text-align:right;
+  }
+  header.top .user-chip b{color:var(--ink); font-size:13px;}
+  header.top .logout{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;margin-top:4px;
+  }
+  header.top .logout:hover{border-color:var(--danger);color:var(--danger);}
+
+  main{padding:22px;}
+  .screen{display:none;}
+  .screen.active{display:block; animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+
+  h1.title{font-family:'Black Han Sans'; font-size:20px; margin:0 0 4px; color:var(--ink);}
+  p.sub{color:var(--muted); font-size:13px; margin:0 0 18px; line-height:1.5;}
+
+  /* ---- Login ---- */
+  .login-card{padding:6px 2px 2px;}
+  .intro-hero{
+    text-align:center; padding:18px 0 26px;
+  }
+  .intro-hero .emo{
+    font-size:52px; line-height:1;
+  }
+  .intro-hero .name{
+    font-family:'Black Han Sans'; font-size:24px; margin-top:10px; letter-spacing:0.5px;
+  }
+  .intro-hero .tag{color:var(--muted); font-size:13px; margin-top:6px;}
+  label{display:block; font-size:12px; color:var(--muted); margin:14px 0 6px;}
+  input[type=text], input[type=password]{
+    width:100%; padding:12px 14px; border-radius:12px;
+    border:1px solid var(--line); background:var(--bg-2); color:var(--ink);
+    font-size:15px; outline:none; font-family:inherit;
+  }
+  input:focus{border-color:var(--gold);}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    width:100%; margin-top:20px; padding:13px 16px; border-radius:12px; border:none;
+    background:linear-gradient(160deg, var(--gold), #b9791f);
+    color:#241605; font-weight:700; font-size:15px; cursor:pointer;
+    box-shadow:0 4px 0 #7c531a;
+  }
+  .btn:active{transform:translateY(2px); box-shadow:0 2px 0 #7c531a;}
+  .btn.secondary{
+    background:var(--panel-2); color:var(--ink); box-shadow:0 4px 0 rgba(0,0,0,0.35);
+  }
+  .btn.ghost{
+    background:transparent; border:1px solid var(--line); color:var(--ink); box-shadow:none;
+  }
+  .btn:disabled{opacity:0.4; cursor:not-allowed; box-shadow:none;}
+  .btn-row{display:flex; gap:10px; margin-top:20px;}
+  .btn-row .btn{margin-top:0;}
+  .error-msg{
+    color:var(--danger); font-size:12px; margin-top:10px; min-height:14px;
+  }
+  .note{color:var(--muted); font-size:11px; margin-top:16px; line-height:1.5; text-align:center;}
+
+  /* ---- Dungeon select ---- */
+  .overall-progress{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .overall-progress .txt b{font-size:15px;}
+  .overall-progress .txt span{display:block; font-size:11px; color:var(--muted); margin-top:2px;}
+  .dungeon-list{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
+  .dungeon-card{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px;
+  }
+  .dungeon-card.cleared{border-color:var(--success);}
+  .dungeon-card .row1{display:flex; align-items:center; gap:12px;}
+  .dungeon-card .icon{
+    width:38px; height:38px; border-radius:10px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:18px;
+    background:var(--bg-2);
+  }
+  .dungeon-card .info{flex:1; min-width:0;}
+  .dungeon-card .info b{font-size:13px; display:block;}
+  .dungeon-card .info span{font-size:11px; color:var(--muted);}
+  .dungeon-card .enter-btn{
+    background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
+    border-radius:10px; padding:8px 12px; font-size:12px; cursor:pointer; flex-shrink:0;
+  }
+  .dungeon-card .enter-btn:hover{border-color:var(--gold);}
+  .mini-bar{height:8px; border-radius:4px; background:var(--bg-2); overflow:hidden; margin-top:8px; border:1px solid var(--line);}
+  .mini-bar-fill{height:100%; background:linear-gradient(90deg, var(--gold), var(--gold-light));}
+  .mini-bar-fill.done{background:linear-gradient(90deg, var(--success), #7BD9A5);}
+  .clear-badge{font-size:11px; color:var(--success); margin-top:6px;}
+
+  .maingame-gate{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:14px; padding:16px; text-align:center;
+  }
+  .maingame-gate.unlocked{border-color:var(--gold);}
+  .maingame-gate .lock{font-size:26px; margin-bottom:6px;}
+
+  /* ---- Belt rack (rank progress) ---- */
+  .belt-rack{
+    display:flex; gap:5px; padding:14px 0 6px; justify-content:space-between;
+  }
+  .belt{
+    flex:1; height:14px; border-radius:7px; position:relative;
+    background:var(--bg-2); border:1px solid var(--line);
+  }
+  .belt.done{border-color:transparent;}
+  .belt.current{box-shadow:0 0 0 2px var(--gold), 0 0 10px rgba(227,168,59,0.6);}
+  .belt-labels{display:flex; justify-content:space-between; font-size:9px; color:var(--muted); margin-bottom:2px;}
+
+  /* ---- HUD ---- */
+  .hud{
+    display:flex; gap:10px; margin-bottom:18px;
+  }
+  .hud .card{
+    flex:1; background:var(--panel-2); border-radius:14px; padding:12px 14px;
+    border:1px solid var(--line);
+  }
+  .hud .card .label{font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px;}
+  .hud .card .value{font-family:'Black Han Sans'; font-size:20px; margin-top:2px;}
+  .hud .card.rank .value{color:var(--gold-light);}
+  .hud .card.gold .value{color:#F4CE7C;}
+  .xp-bar-wrap{margin-bottom:20px;}
+  .xp-bar-top{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:6px;}
+  .xp-bar{height:12px; border-radius:6px; background:var(--bg-2); overflow:hidden; border:1px solid var(--line);}
+  .xp-bar-fill{height:100%; background:linear-gradient(90deg, var(--gold), var(--gold-light)); transition:width .4s ease;}
+
+  .title-banner{
+    background:linear-gradient(160deg, #2a1a0a, #14141c);
+    border:1px solid var(--gold);
+    border-radius:14px; padding:14px; text-align:center; margin-bottom:18px;
+  }
+  .title-banner .t1{font-size:11px; color:var(--gold-light); letter-spacing:2px;}
+  .title-banner .t2{font-family:'Black Han Sans'; font-size:20px; color:var(--gold); margin-top:4px;}
+
+  .menu-grid{display:flex; flex-direction:column; gap:10px;}
+  .menu-btn{
+    display:flex; align-items:center; gap:14px;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px; cursor:pointer; text-align:left;
+  }
+  .menu-btn:hover{border-color:var(--gold);}
+  .menu-btn .icon{
+    width:38px; height:38px; border-radius:10px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:18px;
+    background:var(--bg-2);
+  }
+  .menu-btn .txt b{display:block; font-size:14px;}
+  .menu-btn .txt span{display:block; font-size:11px; color:var(--muted); margin-top:2px;}
+  .menu-btn:disabled, .menu-btn.disabled{opacity:0.45; cursor:not-allowed;}
+
+  /* ---- Question ---- */
+  .lesson-tag{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:11px; color:var(--gold-light);
+    background:rgba(227,168,59,0.12); border:1px solid rgba(227,168,59,0.3);
+    padding:4px 10px; border-radius:20px; margin-bottom:14px;
+  }
+  .dungeon-timer-badge{
+    font-size:11px; color:var(--muted); margin-bottom:14px; margin-left:6px;
+  }
+  .prompt-card{
+    background:var(--bg-2); border:1px solid var(--line); border-radius:16px;
+    padding:26px 16px; text-align:center; font-size:22px; margin-bottom:18px;
+    min-height:70px; display:flex; align-items:center; justify-content:center;
+    flex-wrap:wrap; gap:6px;
+  }
+  .frac{display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle; margin:0 3px; line-height:1.15;}
+  .frac .num, .frac .den{padding:0 6px;}
+  .frac .den{border-top:2px solid currentColor; margin-top:2px;}
+  .op{margin:0 4px; color:var(--gold-light);}
+  .choice-list{display:flex; flex-direction:column; gap:10px;}
+  .choice{
+    display:flex; align-items:center; gap:12px;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:12px;
+    padding:12px 14px; cursor:pointer; font-size:16px;
+  }
+  .choice:hover{border-color:var(--gold);}
+  .choice .num-badge{
+    width:24px;height:24px;border-radius:50%; background:var(--bg-2); color:var(--muted);
+    display:flex;align-items:center;justify-content:center; font-size:12px; flex-shrink:0;
+  }
+  .choice.correct{background:rgba(76,175,125,0.18); border-color:var(--success);}
+  .choice.wrong{background:rgba(214,85,90,0.18); border-color:var(--danger);}
+  .choice.disabled{pointer-events:none;}
+  .feedback{
+    margin-top:16px; padding:12px 14px; border-radius:12px; font-size:14px; display:none;
+  }
+  .feedback.correct{display:block; background:rgba(76,175,125,0.15); border:1px solid var(--success); color:var(--success);}
+  .feedback.wrong{display:block; background:rgba(214,85,90,0.15); border:1px solid var(--danger); color:#f2a3a6;}
+
+  /* ---- Exam ---- */
+  .exam-timer{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--bg-2); border:1px solid var(--line); border-radius:12px;
+    padding:10px 14px; margin-bottom:16px;
+  }
+  .exam-timer .t{font-family:'Black Han Sans'; font-size:26px; color:var(--gold-light);}
+  .exam-timer.low .t{color:var(--danger);}
+  .exam-dots{display:flex; gap:6px;}
+  .exam-dot{width:10px;height:10px;border-radius:50%; background:var(--bg-2); border:1px solid var(--line);}
+  .exam-dot.on{background:var(--gold);}
+  .exam-dot.fail{background:var(--danger);}
+
+  .lb-row{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:10px;
+    background:var(--panel-2); border:1px solid var(--line);
+    margin-bottom:6px; font-size:13px;
+  }
+  .lb-row.me{border-color:var(--gold); background:rgba(227,168,59,0.14);}
+  .lb-rank{width:26px; flex-shrink:0; text-align:center; font-weight:700; color:var(--gold-light);}
+  .lb-name{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .lb-score{color:var(--gold-light); font-weight:700; flex-shrink:0;}
+  .lb-loading, .lb-empty{color:var(--muted); font-size:12px; text-align:center; padding:14px;}
+
+  .duration-toggle{display:flex; gap:8px; margin-bottom:6px;}
+  .dur-btn{
+    flex:1; padding:11px; border-radius:10px; border:1px solid var(--line);
+    background:var(--panel-2); color:var(--ink); font-size:13px; cursor:pointer; font-weight:500;
+  }
+  .dur-btn.active{border-color:var(--gold); background:rgba(227,168,59,0.16); color:var(--gold-light); font-weight:700;}
+
+  .result-modal{
+    position:absolute; inset:0; background:rgba(10,14,26,0.88);
+    display:none; align-items:center; justify-content:center; padding:24px; z-index:10;
+  }
+  .result-modal.active{display:flex;}
+  .result-box{
+    background:var(--panel); border:1px solid var(--gold); border-radius:18px;
+    padding:26px 22px; text-align:center; max-width:340px;
+  }
+  .result-box .emoji{font-size:44px;}
+  .result-box h2{font-family:'Black Han Sans'; margin:10px 0 6px; font-size:22px;}
+  .result-box p{color:var(--muted); font-size:13px; line-height:1.6; margin:0 0 18px;}
+
+  /* ---- Shop ---- */
+  .shop-card{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:16px;
+    padding:18px; margin-bottom:14px;
+  }
+  .shop-card .row{display:flex; justify-content:space-between; align-items:center;}
+  .shop-card .price{color:var(--gold-light); font-weight:700;}
+  .shop-card .desc{font-size:12px; color:var(--muted); margin-top:8px; line-height:1.5;}
+  .voucher-anim{
+    text-align:center; font-size:15px; padding:16px; background:var(--bg-2);
+    border-radius:12px; margin-top:12px; display:none;
+  }
+
+  .back-link{
+    display:inline-block; margin-bottom:14px; color:var(--muted); font-size:13px;
+    cursor:pointer; text-decoration:none;
+  }
+  .back-link:hover{color:var(--gold-light);}
+
+  ::selection{background:var(--gold); color:#241605;}
+
+  .storage-warning{
+    background:#3d1f1f; border-bottom:1px solid var(--danger); color:#f6c9cb;
+    font-size:12px; line-height:1.6; padding:12px 22px; text-align:center;
+  }
+  .save-toast{
+    position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px);
+    background:#3d1f1f; border:1px solid var(--danger); color:#f6c9cb;
+    font-size:12.5px; padding:10px 16px; border-radius:10px;
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+    z-index:50; max-width:80vw; text-align:center;
+  }
+  .save-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="stamp">➗</span> 분수 나누기 챌린지</div>
+    <div class="user-chip" id="userChip" style="display:none;">
+      <b id="userChipName"></b><br>
+      <button class="logout" id="logoutBtn">로그아웃</button>
+    </div>
+  </header>
+  <div id="storageWarning" class="storage-warning" style="display:none;">
+    ⚠️ 지금 저장 기능이 꺼져 있어요! 이 상태로는 새로고침하면 기록이 사라져요.<br>
+    이 아티팩트가 <b>Publish(게시)</b>됐는지, 계정이 <b>Pro/Max/Team/Enterprise</b> 요금제인지 확인해 주세요.
+  </div>
+  <div id="saveToast" class="save-toast"></div>
+  <main>
+
+    <!-- LOGIN -->
+    <section class="screen active" id="screen-login">
+      <div class="login-card">
+        <div class="intro-hero">
+          <div class="emo">➗🎮</div>
+          <div class="name">분수 나누기 챌린지</div>
+          <div class="tag">던전 5개를 깨고 랭킹을 올려보자!</div>
+        </div>
+        <label for="loginName">닉네임</label>
+        <input type="text" id="loginName" placeholder="예: 김수학" maxlength="12" autocomplete="off">
+        <label for="loginPw">비밀번호</label>
+        <input type="password" id="loginPw" placeholder="비밀번호" maxlength="20">
+        <button class="btn" id="loginBtn">시작하기</button>
+        <div class="error-msg" id="loginError"></div>
+        <div class="note">처음 쓰는 닉네임이면 새 계정이 만들어져요. 같은 닉네임으로 다시 들어오면 기록이 그대로 이어져요.<br><br>⚠️ 이 게임의 기록은 이 링크를 쓰는 모든 사람에게 공유되는 저장 공간에 보관돼요. 진짜 비밀번호 대신 간단한 놀이용 비밀번호를 만들어 주세요.</div>
+      </div>
+    </section>
+
+    <!-- DUNGEON SELECT -->
+    <section class="screen" id="screen-dungeons">
+      <h1 class="title">연습 던전</h1>
+      <p class="sub">던전마다 한 단원의 문제만 나와요. 5개 던전에서 각각 <b id="unlockCountTxt">10문제</b> 이상 맞히면 메인 게임이 열려요.</p>
+
+      <div class="overall-progress">
+        <div class="txt"><b id="overallCount">0 / 5</b><span>던전 완료</span></div>
+        <div style="font-size:24px;">🗺️</div>
+      </div>
+
+      <button class="menu-btn" id="goRankingFromDungeons" style="margin-bottom:16px;">
+        <div class="icon">⏱️</div>
+        <div class="txt"><b>랭킹 모드 바로가기</b><span>예습 완료! 60초 타임어택에 바로 도전해요</span></div>
+      </button>
+
+      <div class="dungeon-list" id="dungeonList"></div>
+
+      <div class="maingame-gate" id="maingameGate">
+        <div class="lock" id="gateLockIcon">🔒</div>
+        <div id="gateText">모든 던전을 3분씩 플레이하면 메인 게임에 들어갈 수 있어요.</div>
+        <button class="btn" id="enterMaingameBtn" style="margin-top:12px;" disabled>메인 게임 입장</button>
+      </div>
+    </section>
+
+    <!-- MAIN GAME HOME -->
+    <section class="screen" id="screen-maingame">
+      <a class="back-link" id="mgBack">← 던전 선택으로</a>
+      <div class="belt-labels"><span>1급</span><span>10급 · 정복자</span></div>
+      <div class="belt-rack" id="beltRack"></div>
+
+      <div id="titleBannerWrap"></div>
+
+      <div class="hud">
+        <div class="card rank"><div class="label">현재 급수</div><div class="value" id="hudRank">급외</div></div>
+        <div class="card xp"><div class="label">누적 경험치</div><div class="value" id="hudXp">0</div></div>
+        <div class="card gold"><div class="label">골드</div><div class="value" id="hudGold">0 G</div></div>
+      </div>
+
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-top"><span>다음 급수 시험까지</span><span id="xpBarText">0 / 100</span></div>
+        <div class="xp-bar"><div class="xp-bar-fill" id="xpBarFill" style="width:0%;"></div></div>
+      </div>
+
+      <div class="menu-grid">
+        <button class="menu-btn" id="goPractice">
+          <div class="icon">✏️</div>
+          <div class="txt"><b>랜덤 문제 풀기</b><span>5가지 단원이 골고루 나와요</span></div>
+        </button>
+        <button class="menu-btn" id="goExam">
+          <div class="icon">🏅</div>
+          <div class="txt"><b>급수 시험 보기</b><span id="examSub">경험치를 더 모아야 해요</span></div>
+        </button>
+        <button class="menu-btn" id="goRanking">
+          <div class="icon">⏱️</div>
+          <div class="txt"><b>랭킹 모드</b><span>60초 타임어택! 순위표에 도전해요</span></div>
+        </button>
+        <button class="menu-btn" id="goShop">
+          <div class="icon">🏪</div>
+          <div class="txt"><b>상점</b><span>골드로 경험치 구매권을 사요</span></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- PRACTICE QUESTION (shared by dungeons + random practice) -->
+    <section class="screen" id="screen-question">
+      <a class="back-link" id="qBack">← 뒤로가기</a>
+      <div class="lesson-tag" id="qLessonTag">단원</div><span class="dungeon-timer-badge" id="qDungeonProgress"></span>
+      <div class="prompt-card" id="qPrompt"></div>
+      <div class="choice-list" id="qChoices"></div>
+      <div class="feedback" id="qFeedback"></div>
+    </section>
+
+    <!-- EXAM -->
+    <section class="screen" id="screen-exam">
+      <h1 class="title">급수 시험</h1>
+      <p class="sub">3문제를 모두 <b>30초</b> 안에 맞히면 승급해요. 하나라도 틀리거나 시간이 끝나면 실패예요.</p>
+      <div class="exam-timer" id="examTimerWrap">
+        <div class="t" id="examTimerText">30</div>
+        <div class="exam-dots" id="examDots"></div>
+      </div>
+      <div class="prompt-card" id="examPrompt"></div>
+      <div class="choice-list" id="examChoices"></div>
+    </section>
+
+    <!-- RANKING MODE -->
+    <section class="screen" id="screen-ranking">
+      <a class="back-link" id="rankBack">← 메인 게임으로</a>
+
+      <div id="rankIntro">
+        <h1 class="title">⏱️ 랭킹 모드</h1>
+        <p class="sub" id="rankSubText">60초 동안 분수 나눗셈 문제가 계속 나와요. 최대한 많이 맞혀서 순위표에 이름을 올려보세요!</p>
+        <div class="duration-toggle" id="durationToggle">
+          <button class="dur-btn active" data-dur="60">⚡ 60초</button>
+          <button class="dur-btn" data-dur="300">🕐 5분</button>
+        </div>
+        <button class="btn" id="rankStartBtn">시작하기</button>
+        <h2 style="font-family:'Black Han Sans'; font-size:15px; margin:24px 0 10px;" id="rankIntroBoardTitle">🏆 60초 모드 랭킹보드 TOP 10</h2>
+        <div id="rankIntroBoard"></div>
+      </div>
+
+      <div id="rankPlay" style="display:none;">
+        <div class="exam-timer" id="rankTimerWrap">
+          <div class="t" id="rankTimerText">1:00</div>
+          <div style="font-size:13px; color:var(--muted); text-align:right;">맞힌 개수<br><b id="rankScoreText" style="font-size:20px; color:var(--gold-light);">0</b></div>
+        </div>
+        <div class="prompt-card" id="rankPrompt"></div>
+        <div class="choice-list" id="rankChoices"></div>
+      </div>
+
+      <div id="rankResult" style="display:none;">
+        <div style="text-align:center; padding:6px 0 20px;">
+          <div style="font-size:40px;">🏁</div>
+          <h1 class="title" style="margin-top:8px;">타임 종료!</h1>
+          <p class="sub" style="margin-bottom:6px;">이번 판에 맞힌 문제 수</p>
+          <div style="font-family:'Black Han Sans'; font-size:44px; color:var(--gold-light);" id="rankFinalScore">0</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn secondary" id="rankPlayAgainBtn">다시 도전</button>
+          <button class="btn" id="rankDoneBtn">완료</button>
+        </div>
+        <h2 style="font-family:'Black Han Sans'; font-size:15px; margin:24px 0 10px;" id="rankResultBoardTitle">🏆 랭킹보드 TOP 10</h2>
+        <div id="rankResultBoard"></div>
+      </div>
+    </section>
+
+    <!-- SHOP -->
+    <section class="screen" id="screen-shop">
+      <a class="back-link" id="shopBack">← 메인 게임으로</a>
+      <h1 class="title">상점</h1>
+      <p class="sub">보유 골드: <b id="shopGold">0</b> G</p>
+      <div class="shop-card">
+        <div class="row">
+          <b>경험치 구매권</b>
+          <span class="price">10 G</span>
+        </div>
+        <div class="desc">사용하면 경험치 10~50을 무작위로 얻어요. 50이 나올 확률은 아주 낮아요!</div>
+        <button class="btn" id="buyVoucherBtn" style="margin-top:14px;">구매권 사용하기</button>
+        <div class="voucher-anim" id="voucherAnim"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RESULT MODAL (used for exam pass/fail) -->
+  <div class="result-modal" id="resultModal">
+    <div class="result-box">
+      <div class="emoji" id="resultEmoji">🎉</div>
+      <h2 id="resultTitle">승급 성공!</h2>
+      <p id="resultDesc"></p>
+      <button class="btn" id="resultCloseBtn">확인</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+/* ============== 기본 유틸 ============== */
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b); while(b){const t=b; b=a%b; a=t;} return a||1;}
+function reduceFrac(f){ let [n,d]=f; if(d<0){n=-n;d=-d;} const g=gcd(n,d)||1; return [n/g, d/g]; }
+function fracVal(f){return f[0]/f[1];}
+function frac(n,d){
+  if(d===1) return '<span class="whole">'+n+'</span>';
+  return '<span class="frac"><span class="num">'+n+'</span><span class="den">'+d+'</span></span>';
+}
+function shuffleArray(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function strideSample(arr,n){
+  if(arr.length<=n) return arr.slice();
+  const stride=arr.length/n;
+  const res=[];
+  for(let i=0;i<n;i++) res.push(arr[Math.floor(i*stride)]);
+  return res;
+}
+function buildChoices(correct, wrongCandidates){
+  const correctR=reduceFrac(correct);
+  const pool=[correctR];
+  function exists(f){return pool.some(p=>Math.abs(fracVal(p)-fracVal(f))<1e-9);}
+  for(const w of wrongCandidates){
+    if(pool.length>=4) break;
+    const wr=reduceFrac(w);
+    if(wr[0]>0 && wr[1]>0 && !exists(wr)) pool.push(wr);
+  }
+  let guard=0;
+  while(pool.length<4 && guard<80){
+    guard++;
+    const dn=1+(guard%4);
+    const cand = (guard%2===0) ? reduceFrac([correctR[0]+dn, correctR[1]]) : reduceFrac([correctR[0], correctR[1]+dn]);
+    if(cand[0]>0 && cand[1]>0 && !exists(cand)) pool.push(cand);
+  }
+  const order=shuffleArray(pool.map((_,i)=>i));
+  const choices=order.map(i=>pool[i]);
+  const correctIndex=order.indexOf(0);
+  return {choices, correctIndex};
+}
+function fmtTime(s){
+  s = Math.max(0,Math.floor(s));
+  const m=Math.floor(s/60);
+  const sec=s%60;
+  return m+':'+(sec<10?'0':'')+sec;
+}
+
+/* ============== 단원 정보 ============== */
+const LESSON_NAMES = {
+  1:'분모가 같은 분수 나누기 분수',
+  2:'분모가 다른 분수 나누기 분수',
+  3:'자연수 나누기 분수',
+  4:'분수 나누기를 곱셈으로 바꾸기',
+  5:'분수 나누기 분수 종합'
+};
+const LESSON_ICONS = {1:'🟰',2:'➗',3:'🔢',4:'🔁',5:'⭐'};
+const DUNGEON_CLEAR_CORRECT = 10; // 던전 하나당 합격에 필요한 정답 개수
+
+/* ============== 문제 생성기 ============== */
+function genType1(){
+  const combos=[];
+  const denoms=[4,5,6,7,8,9,10,12];
+  for(const D of denoms){
+    for(let a=1;a<D;a++){
+      for(let b=1;b<D;b++){
+        if(a===b) continue;
+        combos.push([a,b,D]);
+      }
+    }
+  }
+  const sampled=strideSample(combos,36);
+  return sampled.map(([a,b,D],i)=>{
+    const correct=[a,b];
+    const wrongCands=[[b,a],[a,D],[a*b,D]];
+    const {choices,correctIndex}=buildChoices(correct,wrongCands);
+    return {
+      id:'t1_'+(i+1), lesson:1,
+      prompt: frac(a,D)+'<span class="op">÷</span>'+frac(b,D),
+      choices: choices.map(f=>frac(f[0],f[1])),
+      correctIndex
+    };
+  });
+}
+function genType2(){
+  const combos=[];
+  for(let b=2;b<=9;b++){
+    for(let a=1;a<b;a++){
+      for(let d=2;d<=9;d++){
+        for(let c=1;c<d;c++){
+          if(a===c && b===d) continue;
+          combos.push([a,b,c,d]);
+        }
+      }
+    }
+  }
+  const sampled=strideSample(combos,40);
+  return sampled.map(([a,b,c,d],i)=>{
+    const correct=[a*d, b*c];
+    const wrongCands=[[a*c,b*d],[b*c,a*d],[a*c,b*c],[a*d,c*d]];
+    const {choices,correctIndex}=buildChoices(correct,wrongCands);
+    return {
+      id:'t2_'+(i+1), lesson:2,
+      prompt: frac(a,b)+'<span class="op">÷</span>'+frac(c,d),
+      choices: choices.map(f=>frac(f[0],f[1])),
+      correctIndex
+    };
+  });
+}
+function genType3(){
+  const combos=[];
+  for(let n=2;n<=9;n++){
+    for(let b=2;b<=9;b++){
+      for(let a=1;a<b;a++){
+        combos.push([n,a,b]);
+      }
+    }
+  }
+  const sampled=strideSample(combos,36);
+  return sampled.map(([n,a,b],i)=>{
+    const correct=[n*b, a];
+    const wrongCands=[[n*a,b],[n,a*b],[b,n*a],[a,n*b]];
+    const {choices,correctIndex}=buildChoices(correct,wrongCands);
+    return {
+      id:'t3_'+(i+1), lesson:3,
+      prompt: '<span class="whole">'+n+'</span><span class="op">÷</span>'+frac(a,b),
+      choices: choices.map(f=>frac(f[0],f[1])),
+      correctIndex
+    };
+  });
+}
+function genType4(){
+  const combos=[];
+  for(let b=2;b<=9;b++){
+    for(let a=1;a<b;a++){
+      for(let d=2;d<=9;d++){
+        for(let c=1;c<d;c++){
+          combos.push([a,b,c,d]);
+        }
+      }
+    }
+  }
+  const sampled=strideSample(combos,36);
+  return sampled.map(([a,b,c,d],i)=>{
+    const variants=[
+      {key:'correct', f:[a,b,d,c]},
+      {key:'v2', f:[b,a,d,c]},
+      {key:'v3', f:[a,b,c,d]},
+      {key:'v4', f:[b,a,c,d]}
+    ];
+    const order=shuffleArray(variants);
+    const correctIndex=order.findIndex(v=>v.key==='correct');
+    const choices=order.map(v=> frac(v.f[0],v.f[1])+'<span class="op">×</span>'+frac(v.f[2],v.f[3]));
+    return {
+      id:'t4_'+(i+1), lesson:4,
+      prompt: frac(a,b)+'<span class="op">÷</span>'+frac(c,d)+'<br><span style="font-size:13px;color:var(--muted);">을 곱셈식으로 바르게 나타낸 것은?</span>',
+      choices, correctIndex
+    };
+  });
+}
+function genType5(){
+  const combos=[];
+  for(let b=2;b<=12;b++){
+    for(let a=1;a<b;a++){
+      for(let d=2;d<=12;d++){
+        for(let c=1;c<d;c++){
+          if(a===c && b===d) continue;
+          combos.push([a,b,c,d]);
+        }
+      }
+    }
+  }
+  const sampled=strideSample(combos,40);
+  return sampled.map(([a,b,c,d],i)=>{
+    const correct=[a*d,b*c];
+    const wrongCands=[[a*c,b*d],[b*c,a*d],[a*c,b*c]];
+    const {choices,correctIndex}=buildChoices(correct,wrongCands);
+    return {
+      id:'t5_'+(i+1), lesson:5,
+      prompt: frac(a,b)+'<span class="op">÷</span>'+frac(c,d),
+      choices: choices.map(f=>frac(f[0],f[1])),
+      correctIndex
+    };
+  });
+}
+
+const POOLS = {
+  1: genType1(),
+  2: genType2(),
+  3: genType3(),
+  4: genType4(),
+  5: genType5()
+};
+
+/* ============== 상태 ============== */
+let currentUser = null; // {name, data:{...}}
+let lessonQueue = [];
+let curQuestion = null;
+let examState = null;
+let activeDungeonLesson = null; // 던전 모드일 때 단원 번호, 아니면 null
+
+
+const RANK_LABELS = ['급외','1급','2급','3급','4급','5급','6급','7급','8급','9급','10급'];
+const BELT_COLORS = ['#3a4258','#F5E6A8','#E8C15A','#D9A441','#8FBF6B','#4C8FBF','#6B5CA5','#8A5A3B','#C1443C','#2D2D3A','#141414'];
+
+function rankThreshold(r){ return r*100; }
+
+function ensureUserDataShape(data){
+  if(!data.dungeonCorrect) data.dungeonCorrect = {1:0,2:0,3:0,4:0,5:0};
+  for(let i=1;i<=5;i++){ if(typeof data.dungeonCorrect[i] !== 'number') data.dungeonCorrect[i]=0; }
+  if(typeof data.rank !== 'number') data.rank=0;
+  if(typeof data.xp !== 'number') data.xp=0;
+  if(typeof data.gold !== 'number') data.gold=0;
+  if(!Array.isArray(data.answered)) data.answered=[];
+  if(typeof data.titleAwarded !== 'boolean') data.titleAwarded=false;
+  return data;
+}
+function allDungeonsCleared(){
+  const d = currentUser.data.dungeonCorrect;
+  for(let i=1;i<=5;i++){ if((d[i]||0) < DUNGEON_CLEAR_CORRECT) return false; }
+  return true;
+}
+
+/* ============== 저장소 ==============
+   Free 요금제는 클로드의 저장 기능(window.storage)을 쓸 수 없어서,
+   대신 무료 Firebase Realtime Database에 REST로 직접 저장해요.
+   아래 FIREBASE_DB_URL에 본인 Firebase 프로젝트의 데이터베이스 URL을 넣어주세요.
+   (설정 방법은 대화창 안내를 참고하세요)
+================================================= */
+const FIREBASE_DB_URL = 'https://game1-eaa00-default-rtdb.firebaseio.com'; // 실제 사용 중인 Firebase 데이터베이스 URL
+const GAME_NAMESPACE = 'fraction_challenge'; // 다른 게임과 데이터가 섞이지 않도록 하는 이름표
+
+function storageConfigured(){
+  return FIREBASE_DB_URL && FIREBASE_DB_URL.indexOf('YOUR-PROJECT-ID') === -1;
+}
+function storagePath(key){
+  return FIREBASE_DB_URL + '/' + GAME_NAMESPACE + '/' + encodeURIComponent(key) + '.json';
+}
+async function storageGet(key){
+  const res = await fetch(storagePath(key));
+  if(!res.ok) throw new Error('네트워크 오류: '+res.status);
+  return await res.json(); // 값이 없으면 null
+}
+async function storageSet(key, value){
+  const res = await fetch(storagePath(key), {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(value)
+  });
+  if(!res.ok) throw new Error('네트워크 오류: '+res.status);
+  return true;
+}
+
+function showSaveToast(msg, duration){
+  const el = document.getElementById('saveToast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showSaveToast._t);
+  showSaveToast._t = setTimeout(()=>{ el.classList.remove('show'); }, duration||4000);
+}
+
+async function loadUser(name){
+  // 반환값: {status:'ok', data} | {status:'not_found'} | {status:'error', error}
+  try{
+    const data = await storageGet('user_'+name);
+    if(data===null || data===undefined) return {status:'not_found'};
+    return {status:'ok', data};
+  }catch(e){
+    console.error('불러오기 실패', e);
+    return {status:'error', error:e};
+  }
+}
+async function saveUser(){
+  if(!currentUser) return true;
+  try{
+    await storageSet('user_'+currentUser.name, currentUser.data);
+    return true;
+  }catch(e){
+    console.error('저장 실패', e);
+    showSaveToast('⚠️ 저장에 실패했어요. 인터넷 연결을 확인해 주세요. (진행 상황이 기기에만 남아있고 서버에는 저장되지 않았어요)', 5000);
+    return false;
+  }
+}
+async function checkStorageHealth(){
+  if(!storageConfigured()) return 'not_configured';
+  try{
+    const testVal = 'ok_'+Date.now();
+    await storageSet('__healthcheck__', testVal);
+    const res = await storageGet('__healthcheck__');
+    return res===testVal ? 'ok' : 'fail';
+  }catch(e){
+    console.error('저장소 상태 확인 실패', e);
+    return 'fail';
+  }
+}
+checkStorageHealth().then(status=>{
+  if(status==='not_configured'){
+    const el = document.getElementById('storageWarning');
+    el.innerHTML = '⚠️ 아직 저장소 설정이 안 됐어요!<br>코드 맨 위 <b>FIREBASE_DB_URL</b>에 본인의 Firebase 데이터베이스 URL을 넣어주세요.';
+    el.style.display='block';
+  } else if(status==='fail'){
+    document.getElementById('storageWarning').style.display='block';
+  }
+});
+
+/* ============== 화면 전환 ============== */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ============== 로그인 ============== */
+document.getElementById('unlockCountTxt').textContent = DUNGEON_CLEAR_CORRECT+'문제';
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginPw').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+async function doLogin(){
+  const name = document.getElementById('loginName').value.trim();
+  const pw = document.getElementById('loginPw').value;
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  if(!name || !pw){ errEl.textContent = '닉네임과 비밀번호를 모두 입력해 주세요.'; return; }
+  if(name.length>12){ errEl.textContent = '닉네임은 12자 이내로 입력해 주세요.'; return; }
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = '확인하는 중...';
+
+  const result = await loadUser(name);
+
+  if(result.status === 'error'){
+    errEl.textContent = '저장소와 통신하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요. (계속 실패하면 이 게임 링크가 제대로 게시되었는지 확인이 필요해요)';
+    btn.disabled=false; btn.textContent='시작하기';
+    return;
+  }
+
+  if(result.status === 'ok'){
+    if(result.data.password !== pw){
+      errEl.textContent = '비밀번호가 일치하지 않아요. 다시 확인해 주세요.';
+      btn.disabled=false; btn.textContent='시작하기';
+      return;
+    }
+    currentUser = { name, data: ensureUserDataShape(result.data) };
+  } else {
+    currentUser = { name, data: ensureUserDataShape({ password: pw, xp:0, gold:0, rank:0, answered:[], titleAwarded:false }) };
+    const saved = await saveUser();
+    if(!saved){
+      errEl.textContent = '계정을 저장하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.';
+      btn.disabled=false; btn.textContent='시작하기';
+      currentUser = null;
+      return;
+    }
+  }
+  btn.disabled=false; btn.textContent='시작하기';
+  document.getElementById('userChip').style.display='block';
+  document.getElementById('userChipName').textContent = currentUser.name + ' 님';
+  goToDungeons();
+}
+
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  activeDungeonLesson=null;
+  currentUser=null;
+  document.getElementById('userChip').style.display='none';
+  document.getElementById('loginName').value='';
+  document.getElementById('loginPw').value='';
+  showScreen('screen-login');
+});
+
+/* ============== 던전 선택 화면 ============== */
+function goToDungeons(){
+  showScreen('screen-dungeons');
+  renderDungeons();
+}
+function renderDungeons(){
+  const d = currentUser.data;
+  const list = document.getElementById('dungeonList');
+  list.innerHTML='';
+  let clearedCount=0;
+  for(let i=1;i<=5;i++){
+    const c = d.dungeonCorrect[i]||0;
+    const cleared = c>=DUNGEON_CLEAR_CORRECT;
+    if(cleared) clearedCount++;
+    const pct = Math.min(100, Math.round((c/DUNGEON_CLEAR_CORRECT)*100));
+    const card = document.createElement('div');
+    card.className = 'dungeon-card' + (cleared?' cleared':'');
+    card.innerHTML =
+      '<div class="row1">'+
+        '<div class="icon">'+LESSON_ICONS[i]+'</div>'+
+        '<div class="info">'+
+          '<b>'+i+'차시 · '+LESSON_NAMES[i]+'</b>'+
+          '<span>정답 '+Math.min(c,DUNGEON_CLEAR_CORRECT)+' / '+DUNGEON_CLEAR_CORRECT+'문제</span>'+
+        '</div>'+
+        '<button class="enter-btn" data-lesson="'+i+'">'+(cleared?'완료 ✔':'입장하기')+'</button>'+
+      '</div>'+
+      '<div class="mini-bar"><div class="mini-bar-fill'+(cleared?' done':'')+'" style="width:'+pct+'%;"></div></div>'+
+      (cleared ? '<div class="clear-badge">✔ 차시 합격! 10문제를 모두 채웠어요</div>' : '');
+    list.appendChild(card);
+  }
+  list.querySelectorAll('.enter-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> enterDungeon(parseInt(btn.dataset.lesson,10)) );
+  });
+
+  document.getElementById('overallCount').textContent = clearedCount+' / 5';
+
+  const gate = document.getElementById('maingameGate');
+  const gateText = document.getElementById('gateText');
+  const gateLock = document.getElementById('gateLockIcon');
+  const enterBtn = document.getElementById('enterMaingameBtn');
+  if(allDungeonsCleared()){
+    gate.classList.add('unlocked');
+    gateLock.textContent='🔓';
+    gateText.textContent='모든 던전을 합격했어요! 메인 게임에 입장할 수 있어요.';
+    enterBtn.disabled=false;
+  } else {
+    gate.classList.remove('unlocked');
+    gateLock.textContent='🔒';
+    gateText.textContent='던전 5개에서 각각 '+DUNGEON_CLEAR_CORRECT+'문제 이상 맞히면 메인 게임이 열려요. (현재 '+clearedCount+'/5)';
+    enterBtn.disabled=true;
+  }
+}
+document.getElementById('enterMaingameBtn').addEventListener('click', ()=>{
+  if(!allDungeonsCleared()) return;
+  showScreen('screen-maingame');
+  renderMainGame();
+});
+document.getElementById('mgBack').addEventListener('click', ()=>{ goToDungeons(); });
+
+/* ============== 던전 진행도 표시 ============== */
+function updateDungeonProgressBadge(){
+  const badge = document.getElementById('qDungeonProgress');
+  if(!activeDungeonLesson){ badge.textContent=''; return; }
+  const c = currentUser.data.dungeonCorrect[activeDungeonLesson]||0;
+  const cleared = c>=DUNGEON_CLEAR_CORRECT;
+  badge.textContent = '✅ 정답 '+Math.min(c,DUNGEON_CLEAR_CORRECT)+' / '+DUNGEON_CLEAR_CORRECT + (cleared ? ' (차시 합격!)' : '');
+}
+function showDungeonCleared(){
+  curQuestion = null;
+  document.getElementById('qPrompt').innerHTML = '🏆 이 차시를 합격했어요!<br><span style="font-size:13px;color:var(--muted);">정답 '+DUNGEON_CLEAR_CORRECT+'개를 다 채웠어요. 이 던전은 여기서 끝이에요.</span>';
+  document.getElementById('qChoices').innerHTML='';
+  const fb = document.getElementById('qFeedback');
+  fb.className='feedback correct';
+  fb.innerHTML='';
+  const backBtn = document.createElement('button');
+  backBtn.className='btn'; backBtn.style.marginTop='4px'; backBtn.textContent='던전 선택으로 돌아가기';
+  backBtn.addEventListener('click', ()=>{ leaveQuestionScreen(); });
+  fb.appendChild(backBtn);
+  updateDungeonProgressBadge();
+}
+
+function enterDungeon(lessonId){
+  activeDungeonLesson = lessonId;
+  curQuestion = null;
+  showScreen('screen-question');
+  document.getElementById('qLessonTag').textContent = lessonId+'차시 · '+LESSON_NAMES[lessonId];
+  updateDungeonProgressBadge();
+  loadNextQuestion();
+}
+
+/* ============== 메인 게임 화면 렌더 ============== */
+function renderMainGame(){
+  const d = currentUser.data;
+  const rack = document.getElementById('beltRack');
+  rack.innerHTML='';
+  for(let r=1;r<=10;r++){
+    const div=document.createElement('div');
+    div.className='belt';
+    if(r<=d.rank){ div.classList.add('done'); div.style.background=BELT_COLORS[r]; }
+    if(r===d.rank+1 && d.rank<10){ div.classList.add('current'); }
+    rack.appendChild(div);
+  }
+
+  const bannerWrap = document.getElementById('titleBannerWrap');
+  if(d.rank>=10){
+    bannerWrap.innerHTML = '<div class="title-banner"><div class="t1">칭호 획득</div><div class="t2">🏆 분수의 나눗셈 정복자</div></div>';
+  } else {
+    bannerWrap.innerHTML='';
+  }
+
+  document.getElementById('hudRank').textContent = RANK_LABELS[d.rank];
+  document.getElementById('hudXp').textContent = d.xp;
+  document.getElementById('hudGold').textContent = d.gold + ' G';
+
+  const nextRank = Math.min(d.rank+1, 10);
+  const need = rankThreshold(nextRank);
+  const pct = d.rank>=10 ? 100 : Math.min(100, Math.round((d.xp/need)*100));
+  document.getElementById('xpBarFill').style.width = pct+'%';
+  document.getElementById('xpBarText').textContent = d.rank>=10 ? '만점 달성!' : (Math.min(d.xp,need)+' / '+need);
+
+  const examBtn = document.getElementById('goExam');
+  const examSub = document.getElementById('examSub');
+  if(d.rank>=10){
+    examBtn.classList.add('disabled'); examBtn.disabled=true;
+    examSub.textContent = '이미 모든 급수를 마쳤어요!';
+  } else if(d.xp >= rankThreshold(d.rank+1)){
+    examBtn.classList.remove('disabled'); examBtn.disabled=false;
+    examSub.textContent = RANK_LABELS[d.rank+1]+' 승급 시험에 응시할 수 있어요!';
+  } else {
+    examBtn.classList.add('disabled'); examBtn.disabled=true;
+    examSub.textContent = '경험치 '+rankThreshold(d.rank+1)+' 필요 (현재 '+d.xp+')';
+  }
+}
+
+/* ============== 문제 풀기 (랜덤 + 던전 공용) ============== */
+document.getElementById('goPractice').addEventListener('click', ()=>{
+  if(document.getElementById('goPractice').disabled) return;
+  activeDungeonLesson = null;
+  document.getElementById('qLessonTag').textContent = '랜덤 문제';
+  updateDungeonProgressBadge();
+  loadNextQuestion();
+  showScreen('screen-question');
+});
+document.getElementById('qBack').addEventListener('click', ()=>{ leaveQuestionScreen(); });
+
+function leaveQuestionScreen(){
+  if(activeDungeonLesson){
+    activeDungeonLesson=null;
+    goToDungeons();
+  } else {
+    showScreen('screen-maingame');
+    renderMainGame();
+  }
+}
+
+function nextLessonId(){
+  if(lessonQueue.length===0) lessonQueue = shuffleArray([1,2,3,4,5]);
+  return lessonQueue.shift();
+}
+function pickQuestion(){
+  if(activeDungeonLesson){
+    const candidates = POOLS[activeDungeonLesson].filter(q=>!currentUser.data.answered.includes(q.id));
+    if(candidates.length===0) return null;
+    return candidates[Math.floor(Math.random()*candidates.length)];
+  }
+  let attempts=0;
+  let lessonId = nextLessonId();
+  let candidates = POOLS[lessonId].filter(q=>!currentUser.data.answered.includes(q.id));
+  while(candidates.length===0 && attempts<6){
+    attempts++;
+    lessonId = nextLessonId();
+    candidates = POOLS[lessonId].filter(q=>!currentUser.data.answered.includes(q.id));
+  }
+  if(candidates.length===0) return null;
+  return candidates[Math.floor(Math.random()*candidates.length)];
+}
+function loadNextQuestion(){
+  if(activeDungeonLesson){
+    const alreadyCleared = (currentUser.data.dungeonCorrect[activeDungeonLesson]||0) >= DUNGEON_CLEAR_CORRECT;
+    if(alreadyCleared){ showDungeonCleared(); return; }
+  }
+  const q = pickQuestion();
+  if(!q){
+    document.getElementById('qPrompt').innerHTML = activeDungeonLesson
+      ? '🎊 이 던전의 문제를 모두 풀었어요! 시간은 계속 쌓이고 있어요.'
+      : '🎊 준비된 문제를 모두 풀었어요!';
+    document.getElementById('qChoices').innerHTML='';
+    document.getElementById('qFeedback').className='feedback';
+    curQuestion = null;
+    return;
+  }
+  curQuestion = q;
+  if(!activeDungeonLesson) document.getElementById('qLessonTag').textContent = LESSON_NAMES[q.lesson];
+  document.getElementById('qPrompt').innerHTML = q.prompt;
+  const list = document.getElementById('qChoices');
+  list.innerHTML='';
+  document.getElementById('qFeedback').className='feedback';
+  q.choices.forEach((c,idx)=>{
+    const div=document.createElement('div');
+    div.className='choice';
+    div.innerHTML = '<span class="num-badge">'+(idx+1)+'</span><span>'+c+'</span>';
+    div.addEventListener('click', ()=>answerPractice(idx));
+    list.appendChild(div);
+  });
+}
+
+async function answerPractice(idx){
+  const q = curQuestion;
+  if(!q) return;
+  const choiceEls = document.querySelectorAll('#qChoices .choice');
+  choiceEls.forEach(el=>el.classList.add('disabled'));
+  const fb = document.getElementById('qFeedback');
+  const correct = idx === q.correctIndex;
+
+  let justCleared = false;
+  if(correct){
+    choiceEls[idx].classList.add('correct');
+    fb.className='feedback correct';
+    fb.textContent = '정답이에요! 경험치 +10, 골드 +1';
+    currentUser.data.xp += 10;
+    currentUser.data.gold += 1;
+    if(activeDungeonLesson){
+      currentUser.data.dungeonCorrect[activeDungeonLesson] = (currentUser.data.dungeonCorrect[activeDungeonLesson]||0)+1;
+      justCleared = currentUser.data.dungeonCorrect[activeDungeonLesson]===DUNGEON_CLEAR_CORRECT;
+      if(justCleared) fb.textContent += ' 🎉 이 차시 합격!';
+      updateDungeonProgressBadge();
+    }
+  } else {
+    choiceEls[idx].classList.add('wrong');
+    choiceEls[q.correctIndex].classList.add('correct');
+    fb.className='feedback wrong';
+    fb.textContent = '아쉬워요! 정답은 '+(q.correctIndex+1)+'번이었어요.';
+  }
+  if(!currentUser.data.answered.includes(q.id)) currentUser.data.answered.push(q.id);
+  await saveUser();
+
+  const cont = document.createElement('button');
+  cont.className='btn'; cont.style.marginTop='16px';
+  if(justCleared){
+    cont.textContent='결과 보기';
+    cont.addEventListener('click', ()=>{ showDungeonCleared(); }, {once:true});
+  } else {
+    cont.textContent='다음 문제';
+    cont.addEventListener('click', ()=>{ loadNextQuestion(); }, {once:true});
+  }
+  fb.appendChild(document.createElement('br'));
+  fb.appendChild(cont);
+}
+
+/* ============== 급수 시험 ============== */
+document.getElementById('goExam').addEventListener('click', ()=>{
+  if(document.getElementById('goExam').disabled) return;
+  startExam();
+});
+
+function pickExamQuestions(){
+  const allQs = Object.values(POOLS).flat();
+  return shuffleArray(allQs).slice(0,3);
+}
+
+function startExam(){
+  showScreen('screen-exam');
+  const qs = pickExamQuestions();
+  examState = {
+    questions: qs,
+    idx: 0,
+    timeLeft: 30,
+    timer: null
+  };
+  const dots = document.getElementById('examDots');
+  dots.innerHTML='';
+  for(let i=0;i<3;i++){
+    const d=document.createElement('div'); d.className='exam-dot'; d.id='examDot'+i;
+    dots.appendChild(d);
+  }
+  document.getElementById('examTimerWrap').classList.remove('low');
+  document.getElementById('examTimerText').textContent = '30';
+  renderExamQuestion();
+  examState.timer = setInterval(()=>{
+    examState.timeLeft--;
+    document.getElementById('examTimerText').textContent = examState.timeLeft;
+    if(examState.timeLeft<=10) document.getElementById('examTimerWrap').classList.add('low');
+    if(examState.timeLeft<=0){
+      clearInterval(examState.timer);
+      finishExam(false, '시간 초과');
+    }
+  }, 1000);
+}
+
+function renderExamQuestion(){
+  const q = examState.questions[examState.idx];
+  document.getElementById('examPrompt').innerHTML = q.prompt;
+  const list = document.getElementById('examChoices');
+  list.innerHTML='';
+  q.choices.forEach((c,idx)=>{
+    const div=document.createElement('div');
+    div.className='choice';
+    div.innerHTML = '<span class="num-badge">'+(idx+1)+'</span><span>'+c+'</span>';
+    div.addEventListener('click', ()=>answerExam(idx));
+    list.appendChild(div);
+  });
+}
+
+async function answerExam(idx){
+  const q = examState.questions[examState.idx];
+  const correct = idx === q.correctIndex;
+  const dot = document.getElementById('examDot'+examState.idx);
+
+  if(correct){
+    dot.classList.add('on');
+    currentUser.data.xp += 10;
+    currentUser.data.gold += 1;
+    await saveUser();
+    examState.idx++;
+    if(examState.idx>=3){
+      clearInterval(examState.timer);
+      finishExam(true);
+    } else {
+      renderExamQuestion();
+    }
+  } else {
+    dot.classList.add('fail');
+    clearInterval(examState.timer);
+    finishExam(false, '오답 발생');
+  }
+}
+
+async function finishExam(success, reason){
+  const modal = document.getElementById('resultModal');
+  const emoji = document.getElementById('resultEmoji');
+  const title = document.getElementById('resultTitle');
+  const desc = document.getElementById('resultDesc');
+
+  if(success){
+    currentUser.data.rank = Math.min(10, currentUser.data.rank+1);
+    if(currentUser.data.rank>=10) currentUser.data.titleAwarded = true;
+    await saveUser();
+    emoji.textContent='🎉';
+    title.textContent = RANK_LABELS[currentUser.data.rank]+' 승급!';
+    desc.textContent = currentUser.data.rank>=10
+      ? '축하해요! 모든 급수를 마치고 "분수의 나눗셈 정복자" 칭호를 얻었어요!'
+      : '3문제를 30초 안에 모두 맞혔어요. 다음 급수를 향해 계속 도전해 보세요.';
+  } else {
+    emoji.textContent='💢';
+    title.textContent='승급 실패';
+    desc.textContent = (reason==='시간 초과' ? '시간 안에 다 풀지 못했어요.' : '틀린 문제가 있었어요.') + ' 경험치를 더 모아 다시 도전해 보세요.';
+  }
+  modal.classList.add('active');
+}
+
+document.getElementById('resultCloseBtn').addEventListener('click', ()=>{
+  document.getElementById('resultModal').classList.remove('active');
+  showScreen('screen-maingame');
+  renderMainGame();
+});
+
+/* ============== 상점 ============== */
+document.getElementById('goShop').addEventListener('click', ()=>{
+  showScreen('screen-shop');
+  document.getElementById('shopGold').textContent = currentUser.data.gold;
+  document.getElementById('voucherAnim').style.display='none';
+});
+document.getElementById('shopBack').addEventListener('click', ()=>{ showScreen('screen-maingame'); renderMainGame(); });
+
+function drawVoucherXp(){
+  const table=[[10,30],[20,25],[30,20],[40,15],[50,10]];
+  const total = table.reduce((s,t)=>s+t[1],0);
+  let r = Math.random()*total;
+  for(const [val,w] of table){
+    if(r<w) return val;
+    r-=w;
+  }
+  return table[table.length-1][0];
+}
+
+document.getElementById('buyVoucherBtn').addEventListener('click', async ()=>{
+  if(currentUser.data.gold < 10){
+    const anim = document.getElementById('voucherAnim');
+    anim.style.display='block';
+    anim.textContent = '골드가 부족해요! (필요: 10G)';
+    return;
+  }
+  currentUser.data.gold -= 10;
+  const gained = drawVoucherXp();
+  currentUser.data.xp += gained;
+  await saveUser();
+  document.getElementById('shopGold').textContent = currentUser.data.gold;
+  const anim = document.getElementById('voucherAnim');
+  anim.style.display='block';
+  anim.innerHTML = '✨ 경험치 구매권 사용! <b style="color:var(--gold-light);">+'+gained+' 경험치</b> 획득!';
+});
+
+/* ============== 랭킹 모드 ============== */
+const RANKING_DURATIONS = {
+  60:  { label:'60초', key:'ranking_leaderboard_60' },
+  300: { label:'5분',  key:'ranking_leaderboard_300' }
+};
+let selectedRankingDuration = 60;
+let rankingState = null;
+let allQuestionsCache = null;
+function allQuestionsFlat(){
+  if(!allQuestionsCache) allQuestionsCache = Object.values(POOLS).flat();
+  return allQuestionsCache;
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadLeaderboard(duration){
+  const key = RANKING_DURATIONS[duration].key;
+  try{
+    const list = await storageGet(key);
+    return Array.isArray(list) ? list : [];
+  }catch(e){
+    console.error('랭킹보드 불러오기 실패', e);
+    return [];
+  }
+}
+async function saveLeaderboard(duration, list){
+  const key = RANKING_DURATIONS[duration].key;
+  try{
+    await storageSet(key, list);
+  }catch(e){
+    console.error('랭킹보드 저장 실패', e);
+    showSaveToast('⚠️ 랭킹보드 저장에 실패했어요. 인터넷 연결을 확인해 주세요.', 5000);
+  }
+}
+async function submitRankingScore(duration, name, score){
+  const list = await loadLeaderboard(duration);
+  const idx = list.findIndex(e=>e.name===name);
+  if(idx>=0){
+    if(score > list[idx].score){ list[idx].score = score; list[idx].date = Date.now(); }
+  } else {
+    list.push({name, score, date: Date.now()});
+  }
+  list.sort((a,b)=> b.score - a.score);
+  await saveLeaderboard(duration, list.slice(0,50));
+}
+async function renderLeaderboard(containerId, duration, highlightName){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '<div class="lb-loading">랭킹을 불러오는 중...</div>';
+  const list = await loadLeaderboard(duration);
+  if(list.length===0){
+    el.innerHTML = '<div class="lb-empty">아직 기록이 없어요. 첫 기록의 주인공이 되어보세요!</div>';
+    return;
+  }
+  const medals = ['🥇','🥈','🥉'];
+  el.innerHTML = list.slice(0,10).map((e,i)=>{
+    const rankLabel = medals[i] || (i+1)+'.';
+    const isMe = highlightName && e.name===highlightName;
+    return '<div class="lb-row'+(isMe?' me':'')+'"><span class="lb-rank">'+rankLabel+'</span><span class="lb-name">'+escapeHtml(e.name)+'</span><span class="lb-score">'+e.score+'문제</span></div>';
+  }).join('');
+}
+
+function updateRankIntroTexts(){
+  const cfg = RANKING_DURATIONS[selectedRankingDuration];
+  document.getElementById('rankSubText').textContent = cfg.label+' 동안 분수 나눗셈 문제가 계속 나와요. 최대한 많이 맞혀서 순위표에 이름을 올려보세요!';
+  document.getElementById('rankIntroBoardTitle').textContent = '🏆 '+cfg.label+' 모드 랭킹보드 TOP 10';
+}
+document.querySelectorAll('.dur-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    selectedRankingDuration = parseInt(btn.dataset.dur,10);
+    document.querySelectorAll('.dur-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    updateRankIntroTexts();
+    renderLeaderboard('rankIntroBoard', selectedRankingDuration);
+  });
+});
+
+let rankingReturnScreen = 'screen-maingame';
+function openRankingScreen(returnScreen){
+  rankingReturnScreen = returnScreen;
+  document.getElementById('rankBack').textContent = returnScreen==='screen-dungeons' ? '← 던전 선택으로' : '← 메인 게임으로';
+  showScreen('screen-ranking');
+  document.getElementById('rankIntro').style.display='block';
+  document.getElementById('rankPlay').style.display='none';
+  document.getElementById('rankResult').style.display='none';
+  updateRankIntroTexts();
+  renderLeaderboard('rankIntroBoard', selectedRankingDuration);
+}
+function leaveRankingScreen(){
+  if(rankingReturnScreen==='screen-dungeons'){
+    goToDungeons();
+  } else {
+    showScreen('screen-maingame');
+    renderMainGame();
+  }
+}
+document.getElementById('goRanking').addEventListener('click', ()=> openRankingScreen('screen-maingame'));
+document.getElementById('goRankingFromDungeons').addEventListener('click', ()=> openRankingScreen('screen-dungeons'));
+document.getElementById('rankBack').addEventListener('click', ()=>{
+  if(rankingState && rankingState.timer){ clearInterval(rankingState.timer); }
+  rankingState = null;
+  leaveRankingScreen();
+});
+document.getElementById('rankStartBtn').addEventListener('click', startRanking);
+document.getElementById('rankPlayAgainBtn').addEventListener('click', startRanking);
+document.getElementById('rankDoneBtn').addEventListener('click', ()=>{
+  leaveRankingScreen();
+});
+
+function startRanking(){
+  document.getElementById('rankIntro').style.display='none';
+  document.getElementById('rankResult').style.display='none';
+  document.getElementById('rankPlay').style.display='block';
+  document.getElementById('rankTimerWrap').classList.remove('low');
+  const duration = selectedRankingDuration;
+  rankingState = { duration, timeLeft: duration, correct:0, current:null, locked:false, timer:null };
+  document.getElementById('rankTimerText').textContent = fmtTime(duration);
+  document.getElementById('rankScoreText').textContent = '0';
+  loadRankingQuestion();
+  rankingState.timer = setInterval(()=>{
+    if(!rankingState) return;
+    rankingState.timeLeft--;
+    document.getElementById('rankTimerText').textContent = fmtTime(rankingState.timeLeft);
+    if(rankingState.timeLeft<=10) document.getElementById('rankTimerWrap').classList.add('low');
+    if(rankingState.timeLeft<=0){
+      clearInterval(rankingState.timer);
+      finishRanking();
+    }
+  }, 1000);
+}
+
+function loadRankingQuestion(){
+  if(!rankingState) return;
+  rankingState.locked = false;
+  const all = allQuestionsFlat();
+  const q = all[Math.floor(Math.random()*all.length)];
+  rankingState.current = q;
+  document.getElementById('rankPrompt').innerHTML = q.prompt;
+  const list = document.getElementById('rankChoices');
+  list.innerHTML='';
+  q.choices.forEach((c,idx)=>{
+    const div=document.createElement('div');
+    div.className='choice';
+    div.innerHTML = '<span class="num-badge">'+(idx+1)+'</span><span>'+c+'</span>';
+    div.addEventListener('click', ()=>answerRanking(idx));
+    list.appendChild(div);
+  });
+}
+
+function answerRanking(idx){
+  if(!rankingState || rankingState.locked) return;
+  rankingState.locked = true;
+  const q = rankingState.current;
+  const choiceEls = document.querySelectorAll('#rankChoices .choice');
+  choiceEls.forEach(el=>el.classList.add('disabled'));
+  const correct = idx===q.correctIndex;
+  if(correct){
+    choiceEls[idx].classList.add('correct');
+    rankingState.correct++;
+    document.getElementById('rankScoreText').textContent = rankingState.correct;
+  } else {
+    choiceEls[idx].classList.add('wrong');
+    choiceEls[q.correctIndex].classList.add('correct');
+  }
+  setTimeout(()=>{
+    if(rankingState && rankingState.timeLeft>0) loadRankingQuestion();
+  }, 400);
+}
+
+async function finishRanking(){
+  document.getElementById('rankPlay').style.display='none';
+  document.getElementById('rankResult').style.display='block';
+  const score = rankingState ? rankingState.correct : 0;
+  const duration = rankingState ? rankingState.duration : selectedRankingDuration;
+  document.getElementById('rankFinalScore').textContent = score;
+  document.getElementById('rankResultBoardTitle').textContent = '🏆 '+RANKING_DURATIONS[duration].label+' 모드 랭킹보드 TOP 10';
+  rankingState = null;
+  await submitRankingScore(duration, currentUser.name, score);
+  await renderLeaderboard('rankResultBoard', duration, currentUser.name);
+}
+
+})();
+</script>
+</body>
+</html>
